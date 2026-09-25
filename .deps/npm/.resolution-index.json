@@ -1,0 +1,88 @@
+{
+  "contracts/AddFiveStorage.sol": {
+    "./SimpleStorage.sol": "contracts/SimpleStorage.sol",
+    "__sources__": {
+      "contracts/AddFiveStorage.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.19;\n\nimport {SimpleStorage} from \"./SimpleStorage.sol\";\n\ncontract AddFiveStorage is SimpleStorage {\n    function store(uint256 _newNumber) public override {\n        myfavoriteNumber = _newNumber + 5;\n    }\n}\n",
+        "file": "contracts/AddFiveStorage.sol"
+      },
+      "contracts/SimpleStorage.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.24; // this is the solidity version \n\ncontract SimpleStorage {\n    // basic type of variables boolean, uint, int, adress, byte\n    uint256 public myfavoriteNumber;\n    uint256 [] ListOfFavoriteNumbers;\n\n    struct Person{\n        uint256 favoriteNumber;\n        string name;\n    }\n    Person[] public ListOfPeople;\n    // favorite number gets initialized to 0 if no number is given.\n    mapping (string => uint256) public nameToFavoriteNumber;\n\n\n    function store(uint256 _favoriteNumber) public virtual{\n        myfavoriteNumber = _favoriteNumber;\n        \n\n    } // after each public or private use. curly brackets\n    // i think after each function its usually a parentheses and each contract a curly bracket\n    // whatever is inside the parentheses is what we are goikng to add or send to our function\n\n    function retrieve () public view returns (uint256){\n        return myfavoriteNumber;\n    }\n    //calldata, memory, storage\n   function addPerson(string memory _name, uint256 _favoriteNumber) public {\n        ListOfPeople.push(Person(_favoriteNumber, _name));\n        nameToFavoriteNumber[_name] = _favoriteNumber;\n        }\n}\ncontract SimpleStorage2 {}\n\ncontract SimpleStorage3 {}\n\ncontract SimpleStorage4 {}",
+        "file": "contracts/SimpleStorage.sol"
+      }
+    }
+  },
+  "contracts/Aggregator.sol": {
+    "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol": ".deps/npm/@chainlink/contracts@1.5.0/src/v0.8/shared/interfaces/AggregatorV3Interface.sol",
+    "__sources__": {
+      "contracts/Aggregator.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.7;\n\nimport {AggregatorV3Interface} from \"@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol\";\n\n/**\n * THIS IS AN EXAMPLE CONTRACT THAT USES HARDCODED\n * VALUES FOR CLARITY.\n * THIS IS AN EXAMPLE CONTRACT THAT USES UN-AUDITED CODE.\n * DO NOT USE THIS CODE IN PRODUCTION.\n */\n\n/**\n * If you are reading data feeds on L2 networks, you must\n * check the latest answer from the L2 Sequencer Uptime\n * Feed to ensure that the data is accurate in the event\n * of an L2 sequencer outage. See the\n * https://docs.chain.link/data-feeds/l2-sequencer-feeds\n * page for details.\n */\ncontract DataConsumerV3 {\n  AggregatorV3Interface internal dataFeed;\n\n  /**\n   * Network: Sepolia\n   * Aggregator: BTC/USD\n   * Address: 0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43\n   */\n  constructor() {\n    dataFeed = AggregatorV3Interface(0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43);\n  }\n\n  /**\n   * Returns the latest answer.\n   */\n  function getChainlinkDataFeedLatestAnswer() public view returns (int256) {\n    // prettier-ignore\n    (\n      /* uint80 roundId */\n      ,\n      int256 answer,\n      /*uint256 startedAt*/\n      ,\n      /*uint256 updatedAt*/\n      ,\n      /*uint80 answeredInRound*/\n    ) = dataFeed.latestRoundData();\n    return answer;\n  }\n}\n",
+        "file": "contracts/Aggregator.sol"
+      },
+      "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\n// solhint-disable-next-line interface-starts-with-i\ninterface AggregatorV3Interface {\n  function decimals() external view returns (uint8);\n\n  function description() external view returns (string memory);\n\n  function version() external view returns (uint256);\n\n  function getRoundData(\n    uint80 _roundId\n  ) external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n\n  function latestRoundData()\n    external\n    view\n    returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n}\n",
+        "file": "@chainlink/contracts@1.5.0/src/v0.8/shared/interfaces/AggregatorV3Interface.sol"
+      }
+    }
+  },
+  "contracts/FallbackExample.sol": {
+    "__sources__": {
+      "contracts/FallbackExample.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.7;\n\ncontract FallbackExample {\n    uint256 public result;\n\n    receive () external payable {\n        result = 1;\n\n    }\n    fallback() external payable { \n        result = 2;\n    }\n}",
+        "file": "contracts/FallbackExample.sol"
+      }
+    }
+  },
+  "contracts/FundMe.sol": {
+    "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol": ".deps/npm/@chainlink/contracts@1.5.0/src/v0.8/shared/interfaces/AggregatorV3Interface.sol",
+    "./PriceConverter.sol": "contracts/PriceConverter.sol",
+    "__sources__": {
+      "contracts/FundMe.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.18;\n\n// Note: The AggregatorV3Interface might be at a different location than what was in the video!\nimport {AggregatorV3Interface} from \"@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol\";\nimport {PriceConverter} from \"./PriceConverter.sol\";\n\nerror NotOwner();\n\ncontract FundMe {\n    using PriceConverter for uint256;\n\n    mapping(address => uint256) public addressToAmountFunded;\n    address[] public funders;\n\n    // Could we make this constant?  /* hint: no! We should make it immutable! */\n    address public /* immutable */ i_owner;\n    uint256 public constant MINIMUM_USD = 5 * 10 ** 18;\n\n    constructor() {\n        i_owner = msg.sender;\n    }\n\n    function fund() public payable {\n        require(msg.value.getConversionRate() >= MINIMUM_USD, \"You need to spend more ETH!\");\n        // require(PriceConverter.getConversionRate(msg.value) >= MINIMUM_USD, \"You need to spend more ETH!\");\n        addressToAmountFunded[msg.sender] += msg.value;\n        funders.push(msg.sender);\n    }\n\n    function getVersion() public view returns (uint256) {\n        AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);\n        return priceFeed.version();\n    }\n\n    modifier onlyOwner() {\n        // require(msg.sender == owner);\n        if (msg.sender != i_owner) revert NotOwner();\n        _;\n    }\n\n    function withdraw() public onlyOwner {\n        for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {\n            address funder = funders[funderIndex];\n            addressToAmountFunded[funder] = 0;\n        }\n        funders = new address[](0);\n        // // transfer\n        // payable(msg.sender).transfer(address(this).balance);\n\n        // // send\n        // bool sendSuccess = payable(msg.sender).send(address(this).balance);\n        // require(sendSuccess, \"Send failed\");\n\n        // call\n        (bool callSuccess,) = payable(msg.sender).call{value: address(this).balance}(\"\");\n        require(callSuccess, \"Call failed\");\n    }\n    // Explainer from: https://solidity-by-example.org/fallback/\n    // Ether is sent to contract\n    //      is msg.data empty?\n    //          /   \\\n    //         yes  no\n    //         /     \\\n    //    receive()?  fallback()\n    //     /   \\\n    //   yes   no\n    //  /        \\\n    //receive()  fallback()\n\n    fallback() external payable {\n        fund();\n    }\n\n    receive() external payable {\n        fund();\n    }\n}\n\n// Concepts we didn't cover yet (will cover in later sections)\n// 1. Enum\n// 2. Events\n// 3. Try / Catch\n// 4. Function Selector\n// 5. abi.encode / decode\n// 6. Hash with keccak256\n// 7. Yul / Assembly",
+        "file": "contracts/FundMe.sol"
+      },
+      "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\n// solhint-disable-next-line interface-starts-with-i\ninterface AggregatorV3Interface {\n  function decimals() external view returns (uint8);\n\n  function description() external view returns (string memory);\n\n  function version() external view returns (uint256);\n\n  function getRoundData(\n    uint80 _roundId\n  ) external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n\n  function latestRoundData()\n    external\n    view\n    returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n}\n",
+        "file": "@chainlink/contracts@1.5.0/src/v0.8/shared/interfaces/AggregatorV3Interface.sol"
+      },
+      "contracts/PriceConverter.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.18;\n\nimport {AggregatorV3Interface} from \"@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol\"; \n\n// Why is this a library and not abstract?\n// Why not an interface?\nlibrary PriceConverter {\n    // We could make this public, but then we'd have to deploy it\n    function getPrice() internal view returns (uint256) {\n        // Sepolia ETH / USD Address\n        // https://docs.chain.link/data-feeds/price-feeds/addresses\n        AggregatorV3Interface priceFeed = AggregatorV3Interface(\n            0x694AA1769357215DE4FAC081bf1f309aDC325306\n        );\n        (, int256 answer, , , ) = priceFeed.latestRoundData();\n        // ETH/USD rate in 18 digit\n        return uint256(answer * 10000000000);\n    }\n\n    // 1000000000\n    function getConversionRate(\n    uint256 ethAmount\n) internal view returns (uint256) {\n    uint256 ethPrice = getPrice();\n    uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1e18;\n    // the actual ETH/USD conversion rate, after adjusting the extra 0s.\n    return ethAmountInUsd;\n}\n}",
+        "file": "contracts/PriceConverter.sol"
+      }
+    }
+  },
+  "contracts/PriceConverter.sol": {
+    "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol": ".deps/npm/@chainlink/contracts@1.5.0/src/v0.8/shared/interfaces/AggregatorV3Interface.sol",
+    "__sources__": {
+      "contracts/PriceConverter.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.18;\n\nimport {AggregatorV3Interface} from \"@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol\"; \n\n// Why is this a library and not abstract?\n// Why not an interface?\nlibrary PriceConverter {\n    // We could make this public, but then we'd have to deploy it\n    function getPrice() internal view returns (uint256) {\n        // Sepolia ETH / USD Address\n        // https://docs.chain.link/data-feeds/price-feeds/addresses\n        AggregatorV3Interface priceFeed = AggregatorV3Interface(\n            0x694AA1769357215DE4FAC081bf1f309aDC325306\n        );\n        (, int256 answer, , , ) = priceFeed.latestRoundData();\n        // ETH/USD rate in 18 digit\n        return uint256(answer * 10000000000);\n    }\n\n    // 1000000000\n    function getConversionRate(\n    uint256 ethAmount\n) internal view returns (uint256) {\n    uint256 ethPrice = getPrice();\n    uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1e18;\n    // the actual ETH/USD conversion rate, after adjusting the extra 0s.\n    return ethAmountInUsd;\n}\n}",
+        "file": "contracts/PriceConverter.sol"
+      },
+      "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\n// solhint-disable-next-line interface-starts-with-i\ninterface AggregatorV3Interface {\n  function decimals() external view returns (uint8);\n\n  function description() external view returns (string memory);\n\n  function version() external view returns (uint256);\n\n  function getRoundData(\n    uint80 _roundId\n  ) external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n\n  function latestRoundData()\n    external\n    view\n    returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n}\n",
+        "file": "@chainlink/contracts@1.5.0/src/v0.8/shared/interfaces/AggregatorV3Interface.sol"
+      }
+    }
+  },
+  "contracts/SafeMathTester.sol": {
+    "__sources__": {
+      "contracts/SafeMathTester.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract SafeMathTester{\n    uint8 public bigNumber = 255; // checked\n\n    function add() public {\n        unchecked {bigNumber = bigNumber + 1;}\n    }\n}",
+        "file": "contracts/SafeMathTester.sol"
+      }
+    }
+  },
+  "contracts/StorageFactory.sol": {
+    "./SimpleStorage.sol": "contracts/SimpleStorage.sol",
+    "__sources__": {
+      "contracts/StorageFactory.sol": {
+        "content": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.8.19;\n\n// import {SimpleStorage, SimpleStorage2} from \"./SimpleStorage.sol\";\nimport {SimpleStorage} from \"./SimpleStorage.sol\";\n\ncontract StorageFactory {\n    SimpleStorage[] public listOfSimpleStorageContracts;\n\n    function createSimpleStorageContract() public {\n        SimpleStorage simpleStorageContractVariable = new SimpleStorage();\n        // SimpleStorage simpleStorage = new SimpleStorage();\n        listOfSimpleStorageContracts.push(simpleStorageContractVariable);\n    }\n\n    function sfStore(\n        uint256 _simpleStorageIndex,\n        uint256 _simpleStorageNumber\n    ) public {\n        // Address\n        // ABI\n        // SimpleStorage(address(simpleStorageArray[_simpleStorageIndex])).store(_simpleStorageNumber);\n        listOfSimpleStorageContracts[_simpleStorageIndex].store(\n            _simpleStorageNumber\n        );\n    }\n\n    function sfGet(uint256 _simpleStorageIndex) public view returns (uint256) {\n        // return SimpleStorage(address(simpleStorageArray[_simpleStorageIndex])).retrieve();\n        return listOfSimpleStorageContracts[_simpleStorageIndex].retrieve();\n    }\n}\n",
+        "file": "contracts/StorageFactory.sol"
+      },
+      "contracts/SimpleStorage.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.24; // this is the solidity version \n\ncontract SimpleStorage {\n    // basic type of variables boolean, uint, int, adress, byte\n    uint256 public myfavoriteNumber;\n    uint256 [] ListOfFavoriteNumbers;\n\n    struct Person{\n        uint256 favoriteNumber;\n        string name;\n    }\n    Person[] public ListOfPeople;\n    // favorite number gets initialized to 0 if no number is given.\n    mapping (string => uint256) public nameToFavoriteNumber;\n\n\n    function store(uint256 _favoriteNumber) public virtual{\n        myfavoriteNumber = _favoriteNumber;\n        \n\n    } // after each public or private use. curly brackets\n    // i think after each function its usually a parentheses and each contract a curly bracket\n    // whatever is inside the parentheses is what we are goikng to add or send to our function\n\n    function retrieve () public view returns (uint256){\n        return myfavoriteNumber;\n    }\n    //calldata, memory, storage\n   function addPerson(string memory _name, uint256 _favoriteNumber) public {\n        ListOfPeople.push(Person(_favoriteNumber, _name));\n        nameToFavoriteNumber[_name] = _favoriteNumber;\n        }\n}\ncontract SimpleStorage2 {}\n\ncontract SimpleStorage3 {}\n\ncontract SimpleStorage4 {}",
+        "file": "contracts/SimpleStorage.sol"
+      }
+    }
+  }
+}
